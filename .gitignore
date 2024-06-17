@@ -89,4 +89,4 @@ local_settings.py
 .env
 backend/db.sqlite3
 
-.idea
+.idea/
