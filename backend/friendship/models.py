@@ -18,7 +18,7 @@ class Friendship(models.Model):
     def __str__(self):
         return f"{self.to_user} -> {self.from_user}"
 
-    def get_other_user(self, user_to_compare, default=None):
+    def get_friend(self, user_to_compare, default=None):
         if user_to_compare == self.from_user: return self.to_user
         if user_to_compare == self.to_user: return self.from_user
         return default

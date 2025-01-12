@@ -1,4 +1,3 @@
-from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import QuerySet, Q
 
 
@@ -46,7 +45,7 @@ class FriendshipQuerySet(QuerySet):
     def get_mutual_friends(self, user_a, user_b):
         output = []
         for friendship in user_a.friendship_set.all():
-            friend = friendship.get_other_user(user_a)
+            friend = friendship.get_friend(user_a)
             if self.get(user_a=friend, user_b=user_b) and (friend != user_a and friend != user_b):
                 output.append(friend)
         return output

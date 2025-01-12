@@ -2,3 +2,8 @@ django
 djangorestframework
 psycopg2-binary
 Pillow
+django-filter
+django-cors-headers
+
+requests
+django-extensions

@@ -1,31 +1,52 @@
 from rest_framework import status, viewsets
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
-from rest_framework.decorators import action
+from rest_framework.decorators import action, api_view
 from rest_framework.authtoken.models import Token
 from django.shortcuts import get_object_or_404
 
-from user.serializers import UserPOVSerializer, CreateUserSerializer, BasicUserSerializer
+from user.serializers import UserPOVSerializer, CreateUserSerializer, UserSerializer
 from user.models import User
+from user.utils import validate_google_token, get_username_from_email
 from friendship.models import Friendship, FriendRequest
 from friendship.serializers import FriendRequestSerializer
 
 
+@api_view(["POST"])
+def google_auth(request):
+    token = request.data.get("auth_token", None)
+    if token is None:
+        return Response(data={"auth_token": "Not provided."}, status=status.HTTP_400_BAD_REQUEST)
+
+    is_token_valid, user_data = validate_google_token(token)
+    if not is_token_valid:
+        return Response(data={"auth_token": "Invalid token."}, status=status.HTTP_400_BAD_REQUEST)
+
+    user, created = User.objects.get_or_create(
+        email=user_data["email"],
+        defaults={"username": get_username_from_email(user_data["email"])}
+    )
+
+    if created:
+        user.is_active = True
+        user.save()
+
+    token, created = Token.objects.get_or_create(user=user)
+    return Response({"token": token.key}, status=status.HTTP_201_CREATED)
+
+
 class UserViewSet(viewsets.ModelViewSet):
-    permission_classes = [IsAuthenticated]
     queryset = User.objects.all()
 
     def get_serializer_class(self):
         if self.action == "create": return CreateUserSerializer
-        if self.action in ("me", "friendship", "search"): return BasicUserSerializer
+        if self.action in ("me", "friendship", "search"): return UserSerializer
         if self.action == "requests": return FriendRequestSerializer
-
         return UserPOVSerializer
 
     def get_serializer(self, *args, **kwargs):
         if self.get_serializer_class().__name__ == "UserPOVSerializer":
             kwargs["user_pov"] = self.request.user
-
         return super().get_serializer(*args, **kwargs)
 
     def get_permissions(self):

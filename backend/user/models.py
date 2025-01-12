@@ -46,6 +46,6 @@ class User(AbstractBaseUser, PermissionsMixin):
 
         return User.objects.filter(
             id__in=[
-                fs.get_other_user(self).id for fs in self.friendship_set
+                fs.get_friend(self).id for fs in self.friendship_set
             ]
         )

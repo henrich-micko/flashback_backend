@@ -7,5 +7,6 @@ router = routers.DefaultRouter()
 router.register(r"", views.UserViewSet, basename="user")
 
 urlpatterns = [
-    path("login/", rest_framework_views.obtain_auth_token),
+    path("auth/", rest_framework_views.obtain_auth_token),
+    path("auth/google/", views.google_auth, name="google_auth")
 ] + router.urls
