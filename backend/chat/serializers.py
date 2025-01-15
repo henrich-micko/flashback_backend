@@ -1,20 +1,23 @@
 from rest_framework import serializers
 from chat.models import Message
 from user.serializers import MiniUserSerializer
+from user.serializers_fields import AnonymousOrMiniSerializerField
 
 
 class MessageParentSerializer(serializers.ModelSerializer):
+    user = AnonymousOrMiniSerializerField()
 
     class Meta:
         model = Message
         fields = [
             "pk",
-            "content"
+            "content",
+            "user",
         ]
 
 
 class MessageSerializer(serializers.ModelSerializer):
-    user = MiniUserSerializer(read_only=True)
+    user = AnonymousOrMiniSerializerField()
     parent = MessageParentSerializer(read_only=True)
 
     class Meta:

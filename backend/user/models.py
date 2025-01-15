@@ -29,7 +29,6 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def is_friend_with(self, user):
         from friendship.models import Friendship
-        print(user, self)
         return Friendship.objects.get(user_a=self, user_b=user) is not None
 
     @property

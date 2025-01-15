@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from event import models, validators
-from user.serializers import UserSerializer
+from user.serializers import UserSerializer, MiniUserSerializer
 from utils.time import humanize_event_time
 
 
@@ -87,7 +87,7 @@ class EventViewerSerializer(serializers.ModelSerializer):
 
 
 class EventMemberSerializer(serializers.ModelSerializer):
-    user = UserSerializer()
+    user = MiniUserSerializer()
 
     class Meta:
         model = models.EventMember

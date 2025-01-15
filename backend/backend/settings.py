@@ -37,6 +37,10 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
+
+    "channels",
+    "daphne",
+
     'django.contrib.staticfiles',
     'django.contrib.sites',
 
@@ -179,3 +183,50 @@ MEDIA_ROOT = os.path.join(os.path.dirname(BASE_DIR), "mediafiles")
 MEDIA_URL = "/api/media/"
 
 APPEND_SLASH = False
+
+ASGI_APPLICATION = "backend.asgi.application"
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("127.0.0.1", 6379)],
+        },
+    },
+}
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {message}',
+            'style': '{',
+        },
+        'simple': {
+            'format': '{levelname} {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'console': {
+            'level': 'DEBUG',  # Show all logs at DEBUG level and above
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose',
+        },
+    },
+    'loggers': {
+        'channels.consumer': {  # Logs for consumers (WebSocket consumers)
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+    },
+}
+
+ANONYMOUS_USER = {
+    "pk": -1,
+    "id": -1,
+    "username": "flashbacksuser",
+    "email": "flashbacksuser@flashbacks.com",
+    "profile": os.path.join(MEDIA_URL, "user_profile/anonymous.jpg")
+}

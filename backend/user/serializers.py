@@ -1,4 +1,5 @@
 from rest_framework.serializers import ModelSerializer, SerializerMethodField
+from django.conf import settings
 
 from user.models import User
 from friendship.status import get_friendship_status
@@ -57,7 +58,6 @@ class UserPOVSerializer(UserSerializer):
 
 
 class MiniUserSerializer(ModelSerializer):
-    profile_url = SerializerMethodField()
 
     class Meta:
         model = User
@@ -65,8 +65,9 @@ class MiniUserSerializer(ModelSerializer):
             "id",
             "username",
             "email",
-            "profile_url"
+            "profile"
         ]
 
-    def get_profile_url(self, obj: User) -> str:
-        return "https://www.alexgrey.com/img/containers/art_images/Godself-2012-Alex-Grey-watermarked.jpeg/121e98270df193e56eeaebcff787023f.jpeg"
+    @staticmethod
+    def anonymous():
+        return settings.ANONYMOUS_USER

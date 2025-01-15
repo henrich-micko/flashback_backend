@@ -1,3 +1,4 @@
+from django.conf import settings
 from rest_framework import status, viewsets
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
@@ -135,3 +136,10 @@ class UserViewSet(viewsets.ModelViewSet):
         instance = FriendRequest.objects.filter(to_user=self.request.user)
         serializer = self.get_serializer(instance=instance, many=True)
         return Response(data=serializer.data, status=status.HTTP_200_OK)
+
+    @action(detail=False, methods=["get"])
+    def anonymous(self, request):
+        user_data = settings.__getattr__("ANONYMOUS_USER")
+        if user_data is None:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        return Response(user_data, status=status.HTTP_200_OK)
